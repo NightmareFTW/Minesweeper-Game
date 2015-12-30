@@ -4,8 +4,8 @@
 #include <time.h>
 
 const int Side = 10; // Comprimento dos lados do jogo
-const int NUMBOMBS = 10; // N˙mero de bombas
-const double DUMMY = 0.001; // Toler‚ncia, para que as bombas adjacentes sejam contadas devidamente.
+const int NUMBOMBS = 10; // N√∫mero de bombas
+const double DUMMY = 0.001; // Toler√¢ncia, para que as bombas adjacentes sejam contadas devidamente.
 
 void printboard(char[][Side]);
 int numbombs(int,int,int[][2]);
@@ -17,22 +17,22 @@ int valid(int,int);
 
 int main() {
   
-    int gameover = 0; // Confirmar se o jogo acabou ou n„o
+    int gameover = 0; // Confirmar se o jogo acabou ou n√£o
   
-    char uncovered_board[Side][Side]; // Regista o quadro de jogo com a localizaÁ„o de todas
-                                      // as bombas e n˙meros.
+    char uncovered_board[Side][Side]; // Regista o quadro de jogo com a localiza√ß√£o de todas
+                                      // as bombas e n√∫meros.
 
     char current_board[Side][Side]; // Regista o quadro de jogo que deve ser
                                     // mostrado ao utilizador.
 
-    int totalmoves; // Regista o n˙mero total de movimentos que restam ao utilizador atÈ ganhar o jogo.
+    int totalmoves; // Regista o n√∫mero total de movimentos que restam ao utilizador at√© ganhar o jogo.
 
     int i,j;
     int x,y;
 
     int listbombs[NUMBOMBS][2]; // Regista (x,y), coordenadas para todas as bombas.
   
-    srand(time(0)); // Implementa o gerador de n˙meros aleatÛrios.
+    srand(time(0)); // Implementa o gerador de n√∫meros aleat√≥rios.
 
     // Inicializa o quadro de jogo.
     for (i=0;i<Side;i++) {
@@ -42,7 +42,7 @@ int main() {
         }
     }
 
-    // AleatÛriamente escolhe onde as bombas devem estar.
+    // Aleat√≥riamente escolhe onde as bombas devem estar.
     getbombs(listbombs);
   
     // Coloca as bombas no quadro de jogo.
@@ -51,7 +51,7 @@ int main() {
   
     totalmoves = Side*Side - NUMBOMBS;
 
-    // Continuar a jogar atÈ acabar o jogo.
+    // Continuar a jogar at√© acabar o jogo.
     while (!gameover) {
         
         // Obter um movimento do utilizador. <---------------------- HERE!!!!
@@ -72,7 +72,7 @@ int main() {
     return 0;
   
 }
-// PÛs-InstruÁ„o: x e y v„o obter os valores que est„o escondidos
+// P√≥s-Instru√ß√£o: x e y v√£o obter os valores que est√£o escondidos
 // 				  nas coordenadas que o utilizador indicar.
 void getmove(int *x,int *y) {
 
@@ -83,7 +83,7 @@ void getmove(int *x,int *y) {
 	printf("Coluna: ");
 		scanf("%d", y);
   
-    // Ler novamente o movimento, caso o anterior tenha sido inv·lido
+    // Ler novamente o movimento, caso o anterior tenha sido inv√°lido
     while (!valid(*x,*y)) {
         printf("\nCoordenadas invalidas. Tente novamente.\n");
 		printf("A sua jogada:\nLinha: ");
@@ -92,9 +92,9 @@ void getmove(int *x,int *y) {
 			scanf("%d", y);
     }
 }
-// PrÈ-InstruÁ„o: A array de caracteres passados para a funÁ„o
+// Pr√©-Instru√ß√£o: A array de caracteres passados para a fun√ß√£o
 //                devem ser um quadrado de array dimensional de tamanho SIZE
-// PÛs-InstruÁ„o: O quadro de jogo apresentado na funÁ„o ser· desenhado
+// P√≥s-Instru√ß√£o: O quadro de jogo apresentado na fun√ß√£o ser√° desenhado
 // 				  exactamente conforme os caracteres guardados na array.
 void printboard(char board[][Side]) {
 
@@ -127,14 +127,14 @@ void printboard(char board[][Side]) {
 	printf("%c",e);
     printf("\n");
 }
-// PrÈ-InstruÁ„o: Ambos os caracteres da arrays s„o quadrados com dimensıes
-//                 SIZE, a primeira dimens„o da lista de bombas
+// Pr√©-Instru√ß√£o: Ambos os caracteres da arrays s√£o quadrados com dimens√µes
+//                 SIZE, a primeira dimens√£o da lista de bombas
 //                 deve ter o tamanho de NUMBOMBS,
 //                 LINHA e COLUNA devem representar a linha e coluna
-//                 para a qual o utilizador se moveu, e o n˙mero de quadrados
+//                 para a qual o utilizador se moveu, e o n√∫mero de quadrados
 //                 restantes que o utilizador tem de descobrir para ganhar.
-// PÛs-InstruÁ„o: Esta funÁ„o ir· fazer com que o programa execute a jogada
-//                e far· as mudanÁas necess·rias nas estruturas auxiliares 
+// P√≥s-Instru√ß√£o: Esta fun√ß√£o ir√° fazer com que o programa execute a jogada
+//                e far√° as mudan√ßas necess√°rias nas estruturas auxiliares 
 //                para assegurar que o jogo continua a correr devidamente.
 int domove(char board[][Side], char realboard[][Side],
             int listbombs[][2], int row, int column, int *totalmoves) {
@@ -154,7 +154,7 @@ int domove(char board[][Side], char realboard[][Side],
         return 1;
     }
 
-    // Tratar dos casos em que o utilizador escolhe um espaÁo que j· foi aberto ou marcado.
+    // Tratar dos casos em que o utilizador escolhe um espa√ßo que j√° foi aberto ou marcado.
     else if (board[row][column]!='X') {
     
         printf("Essas coordenadas ja foram usadas, tente novamente!\n");
@@ -164,22 +164,22 @@ int domove(char board[][Side], char realboard[][Side],
     // Executar um movimento normal (Sem perder o jogo).
     else {
  
-        // Calcular o n˙mero de bombas adjacentes, e colocar este n˙mero
+        // Calcular o n√∫mero de bombas adjacentes, e colocar este n√∫mero
         // no quadro regular.
         num = numbombs(row, column, listbombs);
         (*totalmoves)--;
         
-        // "Cast" para ter a certeza que o caractere È guardado na array
+        // "Cast" para ter a certeza que o caractere √© guardado na array
         board[row][column]=(char)(num+'0');
 
-        // Se n„o houver bombas adjacentes, limpar a ·rea em redor.
+        // Se n√£o houver bombas adjacentes, limpar a √°rea em redor.
         if (num == 0) {
                 
             // Loop por todos os elementos adjacentes do quadrado actual.  
             for (i=-1;i<2;i++) {
 	            for (j=-1;j<2;j++) {
 	  
-	                // Limpar o quadrado apenas se ainda n„o foi
+	                // Limpar o quadrado apenas se ainda n√£o foi
 	                // utilizado anteriormente.
 	                if (valid(row+i,column+j) && (board[row+i][column+j]=='X'))
 	                    domove(board, realboard, listbombs, row+i, column+j, totalmoves);
@@ -192,11 +192,11 @@ int domove(char board[][Side], char realboard[][Side],
         
     } // end else
 }
-// PÛs-InstruÁ„o: Devolver 1 se as coordenadas recebidas estiverem
+// P√≥s-Instru√ß√£o: Devolver 1 se as coordenadas recebidas estiverem
 //                dentro do quadro de jogo.
 int valid(int row, int column) {
 
-    // Procurar possiveis coordenadas inv·lidas.
+    // Procurar possiveis coordenadas inv√°lidas.
     if (row < 0) return 0;
     
     else if (row >= Side) return 0;
@@ -208,9 +208,9 @@ int valid(int row, int column) {
     // If we get here we're good!!!!!!!!!!!!! \O/
     else return 1;
 }
-// PrÈ-InstruÁ„o: O tamanho da primeira dimens„o de listbombs È NUMBOMBS,
+// Pr√©-Instru√ß√£o: O tamanho da primeira dimens√£o de listbombs √© NUMBOMBS,
 //                e a linha e coluna indica para onde o utilizador se deslocou pela ultima vez.
-// PÛs-InstruÁ„o: A funÁ„o ir· verificar quantas bombas est„o adjacentes
+// P√≥s-Instru√ß√£o: A fun√ß√£o ir√° verificar quantas bombas est√£o adjacentes
 //                ao quadrado que o utilizador deseja descobrir.
 int numbombs(int row ,int column ,int listbombs[][2]) {
 
@@ -226,10 +226,10 @@ int numbombs(int row ,int column ,int listbombs[][2]) {
     
     return count;
 }
-// PrÈ-InstruÁ„o: O tamanho da primeira dimens„o da listbombs È NUMBOMBS.
-// PÛs-InstruÁ„o: A funÁ„o ir· escolher aleatÛriamente o n˙mero apropriado
-//                de bombas e coloc·-las no quadro de jogo, guardando a
-//                informaÁ„o na bomblist.
+// Pr√©-Instru√ß√£o: O tamanho da primeira dimens√£o da listbombs √© NUMBOMBS.
+// P√≥s-Instru√ß√£o: A fun√ß√£o ir√° escolher aleat√≥riamente o n√∫mero apropriado
+//                de bombas e coloc√°-las no quadro de jogo, guardando a
+//                informa√ß√£o na bomblist.
 void getbombs(int bomblist[][2]) {
   
     int i;
@@ -239,15 +239,15 @@ void getbombs(int bomblist[][2]) {
     for (i=0; i<Side*Side; i++)
         curbombs[i] = 0;
     
-    // Controla o n˙mero de bombas colocadas actualmente no jogo.
+    // Controla o n√∫mero de bombas colocadas actualmente no jogo.
     i = 0;
  
-    // Continuar atÈ que todas as bombas aleatÛrias sejam criadas.
+    // Continuar at√© que todas as bombas aleat√≥rias sejam criadas.
     while(i<NUMBOMBS) {
     
         Hdummy = rand()%(Side*Side);
 
-        // Adicionar bomba apenas se n„o for em duplicado.
+        // Adicionar bomba apenas se n√£o for em duplicado.
         if (curbombs[Hdummy]==0) {
       
             bomblist[i][0] = Hdummy/Side;
