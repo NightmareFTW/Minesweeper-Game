@@ -7,11 +7,12 @@ const int Side = 10; // Comprimento dos lados do jogo
 const int NUMBOMBS = 10; // Número de bombas
 const double DUMMY = 0.001; // Tolerância, para que as bombas adjacentes sejam contadas devidamente.
 
+int playgame();
 char getoption();
-void printboard(char board[][Side], int score);
+void printboard(char board[][Side]);
 int numbombs(int row,int column,int listbombs[][2]);
-void domark(char board[][Side], int row, int column);
-int domove(char board[][Side], char realboard[][Side], int listbombs[][2], int row, int column, int *totalmoves, int *score);
+int domark(char board[][Side], int listbombs[][2], int row, int column);
+int domove(char board[][Side], char realboard[][Side], int listbombs[][2], int row, int column, int *totalmoves);
 void getbombs(int bomblist[][2]);
 void getmove(int *x, int *y);
 int valid(int row,int column);
@@ -19,6 +20,22 @@ int valid(int row,int column);
 
 int main() {
   
+    int score = 0;
+    char c = 'S';
+
+    do {
+        score += playgame();
+        printf("Pontuação atual: %d\n", score);
+
+        printf("Deseja jogar um novo jogo? (S/N) ");
+        scanf(" %c", &c);
+
+    } while(c == 'S' || c == 's');
+  
+}
+
+int playgame() {
+
     int gameover = 0; // Confirmar se o jogo acabou ou não
   
     char uncovered_board[Side][Side]; // Regista o quadro de jogo com a localização de todas
@@ -35,7 +52,6 @@ int main() {
     int listbombs[NUMBOMBS][2]; // Regista (x,y), coordenadas para todas as bombas.
     
     char opt;  // Opções de jogada.
-	int score = 0; // Contador de pontuação
 
     srand(time(0)); // Implementa o gerador de números aleatórios.
 
@@ -57,36 +73,33 @@ int main() {
     totalmoves = Side*Side - NUMBOMBS;
 
     // Continuar a jogar até acabar o jogo.
-    while (!gameover) {
+    while (gameover == 0) {
         
-        // Obter um movimento do utilizador.
-        printboard(current_board, score);
+        printboard(current_board);
 
         // Escolhe tipo de jogada
         opt = getoption();
+        // Obter um movimento do utilizador.
         getmove(&x,&y);
         
         if (opt == 'A' || opt == 'a') {
             // Executar esse movimento.
-            gameover = domove(current_board,uncovered_board,listbombs,x,y,&totalmoves,&score);
+            gameover = domove(current_board, uncovered_board, listbombs, x, y, &totalmoves);
         } else if (opt == 'M' || opt == 'm') {
-            // Marcar bomba <-------------------------
-            // ...
-//            printf("\n\t*Work in progress*!\n\n");
-            // Implementar o código para marcar a bomba.
-            domark(current_board, x, y);
+            // Marcar bomba
+            gameover = domark(current_board, listbombs, x, y);
         }
 
-        // Verificar se o utilizador ganhou.
-        if ((!gameover) && (totalmoves==0)) {
+        // Verificar se o utilizador ganhou ou perdeu.
+        if (gameover == 1) {
             printf("Parabens, ganhou!!!\n");
-            gameover = 1;
+            return 1;
+        }
+        if (gameover == -1) {
+            printf("Infelizmente perdeu o jogo\n");
+            return -1;
         }
     }
-  
-    system("PAUSE");
-    return 0;
-  
 }
 
 //Pós-Instrução: Marcar a casa seleccionada pelo utilizador.
@@ -100,7 +113,7 @@ char getoption() {
     int valid = 0;
 
     do {
-        printf("\nEscolha tipo de jogada: (A/M)\n");
+        printf("\nEscolha tipo de jogada: (A/M)  ");
 		scanf(" %c", &opt);
 
         if (opt == 'A' || opt == 'a' || opt == 'M' || opt == 'm')
@@ -120,26 +133,27 @@ void getmove(int *x,int *y) {
 
     // Ler o movimento
     printf("A sua jogada:\nLinha: ");
-		scanf(" %c", &c);
-	printf("Coluna: ");
-		scanf("%d", y);
+    scanf(" %c", &c);
+    printf("Coluna: ");
+    scanf("%d", y);
     *x = (int)(c) - 65;
     
     // Ler novamente o movimento, caso o anterior tenha sido inválido
     while (!valid(*x,*y)) {
         printf("\nCoordenadas invalidas. Tente novamente.\n");
 		printf("A sua jogada:\nLinha: ");
-			scanf(" %c", &c);
+        scanf(" %c", &c);
 		printf("Coluna: ");
-			scanf("%d", y);
+        scanf("%d", y);
         *x = (int)(c) - 65;
     }
 }
+
 // Pré-Instrução: A array de caracteres passados para a função
 //                devem ser um quadrado de array dimensional de tamanho SIZE
 // Pós-Instrução: O quadro de jogo apresentado na função será desenhado
 // 				  exactamente conforme os caracteres guardados na array.
-void printboard(char board[][Side], int score) {
+void printboard(char board[][Side]) {
 
     int i,j,k,t;
 	char a=186, b=201, c=187, d=200, e=188, f=205;
@@ -172,18 +186,35 @@ void printboard(char board[][Side], int score) {
 		printf("%c",f);
 	printf("%c",e);
     printf("\n");
-	printf("\nPontuacao: %d", score);
-    printf("\nA - Abrir casa\t\t|\tM - Marcar Bomba\nX - Casa por explorar\t|\t  - Casa vazia ja explorada\n\n");
+    printf("\nA - Abrir casa\t\t|\tM - Marcar/Desmarcar Bomba\nX - Casa por explorar\t|\t  - Casa vazia ja explorada\n\n");
 }
 
-void domark(char board[][Side], int row, int column) {
+int domark(char board[][Side], int listbombs[][2], int row, int column) {
+
+    if (board[row][column] == 'M') {
+        // desmarcar uma casa já marcada
+        board[row][column] = 'X';
+        return 0;
+    }
 
     if (board[row][column] != 'X') {
         printf("Essas coordenadas ja foram usadas, tente novamente!\n");
-        return;
+        return 0;
     }
 
     board[row][column] = 'M';
+    
+    int i = 0;
+    for (i; i < NUMBOMBS; i++) {
+        if (board[listbombs[i][0]][listbombs[i][1]] != 'M') {
+            // não ganhou o jogo, existe pelo menos uma bomba que não está marcada
+            return 0;
+        }
+    }
+
+    printboard(board);
+    // ganhou o jogo, todas as minas estão marcadas
+    return 1;
 }
 
 // Pré-Instrução: Ambos os caracteres da arrays são quadrados com dimensões
@@ -196,8 +227,7 @@ void domark(char board[][Side], int row, int column) {
 //                e fará as mudanças necessárias nas estruturas auxiliares 
 //                para assegurar que o jogo continua a correr devidamente.
 int domove(char board[][Side], char realboard[][Side],
-            int listbombs[][2], int row, int column, int *totalmoves, int *score) {
-
+            int listbombs[][2], int row, int column, int *totalmoves) {
 
     int i, j, num;
   
@@ -208,9 +238,9 @@ int domove(char board[][Side], char realboard[][Side],
         for (i=0;i<NUMBOMBS;i++) 
             board[listbombs[i][0]][listbombs[i][1]]='B';
     
-        printboard(board, *score);
-        printf("Perdeu!\n");
-        return 1;
+        printboard(board);
+        // Pisou uma mina - perdeu o jogo
+        return -1;
     }
 
     // Tratar dos casos em que o utilizador escolhe um espaço que já foi aberto ou marcado.
@@ -227,7 +257,6 @@ int domove(char board[][Side], char realboard[][Side],
         // no quadro regular.
         num = numbombs(row, column, listbombs);
         (*totalmoves)--;
-        (*score)++;
         
         // "Cast" para ter a certeza que o caractere é guardado na array
         board[row][column]=(char)(num+'0');
@@ -242,7 +271,7 @@ int domove(char board[][Side], char realboard[][Side],
 	                // Limpar o quadrado apenas se ainda não foi
 	                // utilizado anteriormente.
 	                if (valid(row+i,column+j) && (board[row+i][column+j]=='X'))
-	                    domove(board, realboard, listbombs, row+i, column+j, totalmoves, score);
+	                    domove(board, realboard, listbombs, row+i, column+j, totalmoves);
 	            }
             }
 	      
@@ -252,6 +281,7 @@ int domove(char board[][Side], char realboard[][Side],
         
     } // end else
 }
+
 // Pós-Instrução: Devolver 1 se as coordenadas recebidas estiverem
 //                dentro do quadro de jogo.
 int valid(int row, int column) {
@@ -268,6 +298,7 @@ int valid(int row, int column) {
     // If we get here we're good!!!!!!!!!!!!! \O/
     else return 1;
 }
+
 // Pré-Instrução: O tamanho da primeira dimensão de listbombs é NUMBOMBS,
 //                e a linha e coluna indica para onde o utilizador se deslocou pela ultima vez.
 // Pós-Instrução: A função irá verificar quantas bombas estão adjacentes
