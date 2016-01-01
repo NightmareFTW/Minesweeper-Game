@@ -8,9 +8,10 @@ const int NUMBOMBS = 10; // Número de bombas
 const double DUMMY = 0.001; // Tolerância, para que as bombas adjacentes sejam contadas devidamente.
 
 char getoption();
-void printboard(char board[][Side]);
+void printboard(char board[][Side], int score);
 int numbombs(int row,int column,int listbombs[][2]);
-int domove(char board[][Side], char realboard[][Side], int listbombs[][2], int row, int column, int*totalmoves);
+void domark(char board[][Side], int row, int column);
+int domove(char board[][Side], char realboard[][Side], int listbombs[][2], int row, int column, int *totalmoves, int *score);
 void getbombs(int bomblist[][2]);
 void getmove(int *x, int *y);
 int valid(int row,int column);
@@ -34,7 +35,7 @@ int main() {
     int listbombs[NUMBOMBS][2]; // Regista (x,y), coordenadas para todas as bombas.
     
     char opt;  // Opções de jogada.
-	int score; // Mostra a pontuação.
+	int score = 0; // Contador de pontuação
 
     srand(time(0)); // Implementa o gerador de números aleatórios.
 
@@ -59,7 +60,7 @@ int main() {
     while (!gameover) {
         
         // Obter um movimento do utilizador.
-        printboard(current_board);
+        printboard(current_board, score);
 
         // Escolhe tipo de jogada
         opt = getoption();
@@ -67,12 +68,13 @@ int main() {
         
         if (opt == 'A' || opt == 'a') {
             // Executar esse movimento.
-            gameover = domove(current_board,uncovered_board,listbombs,x,y,&totalmoves);
+            gameover = domove(current_board,uncovered_board,listbombs,x,y,&totalmoves,&score);
         } else if (opt == 'M' || opt == 'm') {
             // Marcar bomba <-------------------------
             // ...
-            printf("\n\t*Work in progress*!\n\n");
+//            printf("\n\t*Work in progress*!\n\n");
             // Implementar o código para marcar a bomba.
+            domark(current_board, x, y);
         }
 
         // Verificar se o utilizador ganhou.
@@ -137,11 +139,10 @@ void getmove(int *x,int *y) {
 //                devem ser um quadrado de array dimensional de tamanho SIZE
 // Pós-Instrução: O quadro de jogo apresentado na função será desenhado
 // 				  exactamente conforme os caracteres guardados na array.
-void printboard(char board[][Side]) {
+void printboard(char board[][Side], int score) {
 
     int i,j,k,t;
 	char a=186, b=201, c=187, d=200, e=188, f=205;
-	int score;
 
     // Desenhar os lados da tabela
     printf("    ");
@@ -171,9 +172,20 @@ void printboard(char board[][Side]) {
 		printf("%c",f);
 	printf("%c",e);
     printf("\n");
-	printf("\nPontuacao: ", score);
+	printf("\nPontuacao: %d", score);
     printf("\nA - Abrir casa\t\t|\tM - Marcar Bomba\nX - Casa por explorar\t|\t  - Casa vazia ja explorada\n\n");
 }
+
+void domark(char board[][Side], int row, int column) {
+
+    if (board[row][column] != 'X') {
+        printf("Essas coordenadas ja foram usadas, tente novamente!\n");
+        return;
+    }
+
+    board[row][column] = 'M';
+}
+
 // Pré-Instrução: Ambos os caracteres da arrays são quadrados com dimensões
 //                 SIZE, a primeira dimensão da lista de bombas
 //                 deve ter o tamanho de NUMBOMBS,
@@ -184,7 +196,7 @@ void printboard(char board[][Side]) {
 //                e fará as mudanças necessárias nas estruturas auxiliares 
 //                para assegurar que o jogo continua a correr devidamente.
 int domove(char board[][Side], char realboard[][Side],
-            int listbombs[][2], int row, int column, int *totalmoves) {
+            int listbombs[][2], int row, int column, int *totalmoves, int *score) {
 
 
     int i, j, num;
@@ -196,7 +208,7 @@ int domove(char board[][Side], char realboard[][Side],
         for (i=0;i<NUMBOMBS;i++) 
             board[listbombs[i][0]][listbombs[i][1]]='B';
     
-        printboard(board);
+        printboard(board, *score);
         printf("Perdeu!\n");
         return 1;
     }
@@ -215,6 +227,7 @@ int domove(char board[][Side], char realboard[][Side],
         // no quadro regular.
         num = numbombs(row, column, listbombs);
         (*totalmoves)--;
+        (*score)++;
         
         // "Cast" para ter a certeza que o caractere é guardado na array
         board[row][column]=(char)(num+'0');
@@ -229,7 +242,7 @@ int domove(char board[][Side], char realboard[][Side],
 	                // Limpar o quadrado apenas se ainda não foi
 	                // utilizado anteriormente.
 	                if (valid(row+i,column+j) && (board[row+i][column+j]=='X'))
-	                    domove(board, realboard, listbombs, row+i, column+j, totalmoves);
+	                    domove(board, realboard, listbombs, row+i, column+j, totalmoves, score);
 	            }
             }
 	      
@@ -304,15 +317,3 @@ void getbombs(int bomblist[][2]) {
         }
     }
 }
-
-// Pós-Instrução: Pontuação do jogo.
-
-int score(int *totalmoves){
-	int s=1;
-	int t;
-	
-	t=s + *totalmoves;
-	
-	return t;
-	}
-	
