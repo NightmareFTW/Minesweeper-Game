@@ -8,12 +8,12 @@ const int NUMBOMBS = 10; // Número de bombas
 const double DUMMY = 0.001; // Tolerância, para que as bombas adjacentes sejam contadas devidamente.
 
 char getoption();
-void printboard(char[][Side]);
-int numbombs(int,int,int[][2]);
-int domove(char[][Side], char[][Side], int[][2], int, int, int*);
-void getbombs(int[][2]);
-void getmove(int*, int*);
-int valid(int,int);
+void printboard(char board[][Side]);
+int numbombs(int row,int column,int listbombs[][2]);
+int domove(char board[][Side], char realboard[][Side], int listbombs[][2], int row, int column, int*totalmoves);
+void getbombs(int bomblist[][2]);
+void getmove(int *x, int *y);
+int valid(int row,int column);
 
 
 int main() {
@@ -33,7 +33,8 @@ int main() {
 
     int listbombs[NUMBOMBS][2]; // Regista (x,y), coordenadas para todas as bombas.
     
-    char opt;  
+    char opt;  // Opções de jogada.
+	int score; // Mostra a pontuação.
 
     srand(time(0)); // Implementa o gerador de números aleatórios.
 
@@ -57,7 +58,7 @@ int main() {
     // Continuar a jogar até acabar o jogo.
     while (!gameover) {
         
-        // Obter um movimento do utilizador. <---------------------- HERE!!!!
+        // Obter um movimento do utilizador.
         printboard(current_board);
 
         // Escolhe tipo de jogada
@@ -68,10 +69,10 @@ int main() {
             // Executar esse movimento.
             gameover = domove(current_board,uncovered_board,listbombs,x,y,&totalmoves);
         } else if (opt == 'M' || opt == 'm') {
-            // Marcar bomba
+            // Marcar bomba <-------------------------
             // ...
-            printf("\n\tTODO!\n\n");
-            // Implementar o código para marcar a bomba
+            printf("\n\t*Work in progress*!\n\n");
+            // Implementar o código para marcar a bomba.
         }
 
         // Verificar se o utilizador ganhou.
@@ -86,7 +87,11 @@ int main() {
   
 }
 
+//Pós-Instrução: Marcar a casa seleccionada pelo utilizador.
 
+
+//Pós-Instrução: Pedir ao utilizador o que deseja fazer na jogada,
+// 				 tem como opções, abrir a casa (A), ou marcar a casa (M).
 char getoption() {
 
     char opt;
@@ -134,8 +139,9 @@ void getmove(int *x,int *y) {
 // 				  exactamente conforme os caracteres guardados na array.
 void printboard(char board[][Side]) {
 
-    int i,j,k;
+    int i,j,k,t;
 	char a=186, b=201, c=187, d=200, e=188, f=205;
+	int score;
 
     // Desenhar os lados da tabela
     printf("    ");
@@ -165,6 +171,7 @@ void printboard(char board[][Side]) {
 		printf("%c",f);
 	printf("%c",e);
     printf("\n");
+	printf("\nPontuacao: ", score);
     printf("\nA - Abrir casa\t\t|\tM - Marcar Bomba\nX - Casa por explorar\t|\t  - Casa vazia ja explorada\n\n");
 }
 // Pré-Instrução: Ambos os caracteres da arrays são quadrados com dimensões
@@ -258,7 +265,7 @@ int numbombs(int row ,int column ,int listbombs[][2]) {
     int count = 0;
     for (i=0;i<NUMBOMBS;i++) {
 
-        // Check each bomb one by one against the square to uncover. Verificar bombas, uma a uma em cada quadrado para destapar.
+        // Verificar bombas, uma a uma em cada quadrado para destapar.
         if ((abs(row-listbombs[i][0])<=1+DUMMY) && (abs(column-listbombs[i][1])<=1+DUMMY)) {
             count++; 
         }  
@@ -297,3 +304,15 @@ void getbombs(int bomblist[][2]) {
         }
     }
 }
+
+// Pós-Instrução: Pontuação do jogo.
+
+int score(int *totalmoves){
+	int s=1;
+	int t;
+	
+	t=s + *totalmoves;
+	
+	return t;
+	}
+	
